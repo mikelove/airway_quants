@@ -1,0 +1,28 @@
+# Salmon quants for the 'airway' package
+
+## How to read these into R and make a DESeqDataSet
+
+```{r}
+library(readr)
+coldata <- read_delim("data/SraRunTable.txt", delim="\t")
+coldata$cell <- factor(coldata$cell_line_s)
+coldata$dex <- factor(coldata$treatment_s)
+coldata$dex
+levels(coldata$dex) <- rep(c("trt","untrt"),4)
+coldata$dex <- relevel(coldata$dex, "untrt")
+```
+
+```{r}
+coldata <- coldata[c("Run_s","cell","dex")]
+coldata <- coldata[order(coldata$dex, coldata$cell),]
+files <- file.path("data/quant",coldata$Run_s,"quant.sf.gz")
+names(files) <- coldata$Run_s
+```
+
+```{r}
+library(tximport)
+load("data/tx2gene.rda") # see mikelove/asthma/asthma.Rmd
+txi <- tximport(files, type="salmon", tx2gene=tx2gene)
+library(DESeq2)
+dds <- DESeqDataSetFromTximport(txi, coldata, ~cell + dex)
+```
