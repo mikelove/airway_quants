@@ -21,7 +21,7 @@ names(files) <- coldata$Run_s
 
 ```{r}
 library(tximport)
-load("data/tx2gene.rda") # see mikelove/asthma/asthma.Rmd
+load("data/tx2gene.rda") # see mikelove/asthma/scripts/asthma.Rmd
 txi <- tximport(files, type="salmon", tx2gene=tx2gene)
 library(DESeq2)
 dds <- DESeqDataSetFromTximport(txi, coldata, ~cell + dex)
